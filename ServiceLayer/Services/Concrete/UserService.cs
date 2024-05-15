@@ -17,6 +17,7 @@ namespace ServiceLayer.Services.Concrete
 		IConfiguration config
 		) : IUserService
 	{
+
 		public async Task<LoginResponse> LoginAsync(LoginDTO model)
 		{
 			if (model == null) return new LoginResponse(false, null!, "Model is empty!");
@@ -94,5 +95,29 @@ namespace ServiceLayer.Services.Concrete
 
 			return new JwtSecurityTokenHandler().WriteToken(token);
 		}
+
+		public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordDTO model)
+		{
+			var user = await userManager.FindByEmailAsync(model.Email);
+			if (user is null) return new ForgotPasswordResponse(false, null!, "User not found!");
+
+			var token = await userManager.GeneratePasswordResetTokenAsync(user);
+			if (token is null) return new ForgotPasswordResponse(false, null!, "Something went wrong! Please try again later.");
+
+			return new ForgotPasswordResponse(true, token, "Use token for reset your 'Password'");
+		}
+
+		public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordDTO model)
+		{
+			var user = await userManager.FindByIdAsync(model.UserId);
+			if (user is null) return new ResetPasswordResponse(false, "User not found!");
+
+			var result = await userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+			if (!result.Succeeded) return new ResetPasswordResponse(false, "Password change failed!");
+
+			return new ResetPasswordResponse(true, "Password changed successfully");
+		}
+
+
 	}
 }

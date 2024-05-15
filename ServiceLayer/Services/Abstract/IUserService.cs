@@ -7,5 +7,7 @@ namespace ServiceLayer.Services.Abstract
 	{
 		Task<GeneralResponse> RegisterUserAsync(UserDTO model);
 		Task<LoginResponse> LoginAsync(LoginDTO model);
+		Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordDTO model);
+		Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordDTO model);
 	}
 }

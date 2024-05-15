@@ -33,12 +33,19 @@ namespace ServiceLayer.Extensions
 			services.AddIdentity<AppUser, IdentityRole>()
 				.AddEntityFrameworkStores<AppDbContext>()
 				.AddSignInManager()
+				.AddDefaultTokenProviders()
 				.AddRoles<IdentityRole>();
 
 			// Identity options configuration
 			services.Configure<IdentityOptions>(options =>
 			{
 				options.Password.RequiredLength = 7;
+			});
+
+			// Token configuration  
+			services.Configure<DataProtectionTokenProviderOptions>(opt =>
+			{
+				opt.TokenLifespan = TimeSpan.FromHours(2); 
 			});
 
 			// JWT authentication :
@@ -58,6 +65,7 @@ namespace ServiceLayer.Extensions
 					ValidAudience = config["Jwt:Audience"],
 					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!)),
 				};
+			
 			});
 
 			return services;
