@@ -1,5 +1,5 @@
 ﻿using EntityLayer.DTOs;
-using static EntityLayer.DTOs.ServiceResponses;
+using static ServiceLayer.Responses.ServiceResponses;
 
 namespace ServiceLayer.Services.Abstract
 {

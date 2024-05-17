@@ -6,7 +6,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 {
 	[Route("api/AuthServices")]
 	[ApiController]
-	public class UserController(
+	public class AuthController(
 		IUserService userService
 		) : ControllerBase
 	{
@@ -21,7 +21,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			var response = await userService.RegisterUserAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
-			return Ok(response);
+			return Ok(response.Message);
 
 		}
 
@@ -34,7 +34,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			var response = await userService.LoginAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
-			return Ok(response);
+			return Ok(response.Message);
 
 
 		}
@@ -47,7 +47,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			var response = await userService.ForgotPasswordAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
-			return Ok(response);
+			return Ok(response.Message);
 		}
 
 		[HttpPost("ResetPassword")]
@@ -58,7 +58,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			var response = await userService.ResetPasswordAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
-			return Ok(response);
+			return Ok(response.Message);
 		}
 	}
 }

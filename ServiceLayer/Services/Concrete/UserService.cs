@@ -3,18 +3,20 @@ using EntityLayer.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using ServiceLayer.Helpers;
 using ServiceLayer.Services.Abstract;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using static EntityLayer.DTOs.ServiceResponses;
+using static ServiceLayer.Responses.ServiceResponses;
 
 namespace ServiceLayer.Services.Concrete
 {
-	public class UserService(
+    public class UserService(
 		UserManager<AppUser> userManager,
 		RoleManager<IdentityRole> roleManager,
-		IConfiguration config
+		IConfiguration config,
+		IEmailSendMethod sendEmailMethod
 		) : IUserService
 	{
 
@@ -99,12 +101,15 @@ namespace ServiceLayer.Services.Concrete
 		public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordDTO model)
 		{
 			var user = await userManager.FindByEmailAsync(model.Email);
-			if (user is null) return new ForgotPasswordResponse(false, null!, "User not found!");
+			if (user is null) return new ForgotPasswordResponse(false, "User not found!");
 
 			var token = await userManager.GeneratePasswordResetTokenAsync(user);
-			if (token is null) return new ForgotPasswordResponse(false, null!, "Something went wrong! Please try again later.");
+			if (token is null) return new ForgotPasswordResponse(false, "Something went wrong! Please try again later.");
 
-			return new ForgotPasswordResponse(true, token, "Use token for reset your 'Password'");
+			// Sending token to user email
+			await sendEmailMethod.SendPasswordResetToken(token, model.Email);
+
+			return new ForgotPasswordResponse(true, "Token is sent to your Email! Please check your inbox.");
 		}
 
 		public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordDTO model)

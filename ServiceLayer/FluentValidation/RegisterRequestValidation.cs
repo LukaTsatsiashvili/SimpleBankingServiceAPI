@@ -8,10 +8,6 @@ namespace ServiceLayer.FluentValidation
 	{
         public RegisterRequestValidation()
         {
-            RuleFor(x => x.Name)
-                .NotEmpty().WithMessage(ValidationMessages.NullEmptyMessage("Name"))
-                .NotNull().WithMessage(ValidationMessages.NullEmptyMessage("Name"));
-
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage(ValidationMessages.NullEmptyMessage("Email"))
                 .NotNull().WithMessage(ValidationMessages.NullEmptyMessage("Email"))

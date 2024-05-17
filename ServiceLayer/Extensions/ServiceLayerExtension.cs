@@ -1,4 +1,5 @@
 ﻿using EntityLayer.Auth;
+using EntityLayer.DTOs;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Context;
 using ServiceLayer.FluentValidation;
+using ServiceLayer.Helpers;
 using ServiceLayer.Services.Abstract;
 using ServiceLayer.Services.Concrete;
 using System.Text;
@@ -18,7 +20,8 @@ namespace ServiceLayer.Extensions
 	{
 		public static IServiceCollection LoadServiceLayerExtension(this IServiceCollection services, IConfiguration config)
 		{
-			// Add Services 
+			// Add All Services Here 
+
 			services.AddScoped<IUserService, UserService>();
 
 			// Add Fluent Validation 
@@ -29,7 +32,7 @@ namespace ServiceLayer.Extensions
 			services.AddValidatorsFromAssemblyContaining<LoginRequestValidation>();
 
 			// Add Identity & JWT Authentication
-			// Identity :
+			// Identity 
 			services.AddIdentity<AppUser, IdentityRole>()
 				.AddEntityFrameworkStores<AppDbContext>()
 				.AddSignInManager()
@@ -42,13 +45,13 @@ namespace ServiceLayer.Extensions
 				options.Password.RequiredLength = 7;
 			});
 
-			// Token configuration  
+			// Token configuration (we used it for password reset) 
 			services.Configure<DataProtectionTokenProviderOptions>(opt =>
 			{
 				opt.TokenLifespan = TimeSpan.FromHours(2); 
 			});
 
-			// JWT authentication :
+			// JWT authentication 
 			services.AddAuthentication(options =>
 			{
 				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -67,6 +70,10 @@ namespace ServiceLayer.Extensions
 				};
 			
 			});
+
+			// Email Settings Mapping & Adding EmailService 
+			services.Configure<EmailInformationDTO>(config.GetSection("EmailSettings"));
+			services.AddScoped<IEmailSendMethod, EmailSendMethod>();
 
 			return services;
 		}
