@@ -1,11 +1,11 @@
-﻿using EntityLayer.DTOs;
+﻿using EntityLayer.DTOs.Auth;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
 
 namespace ServiceLayer.Helpers
 {
-	public interface IEmailSendMethod
+    public interface IEmailSendMethod
 	{
 		Task SendPasswordResetToken(string token, string toEmail);
 	}

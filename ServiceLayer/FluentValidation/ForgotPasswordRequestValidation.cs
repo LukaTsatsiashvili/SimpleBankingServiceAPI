@@ -1,10 +1,10 @@
-﻿using EntityLayer.DTOs;
+﻿using EntityLayer.DTOs.Auth;
 using FluentValidation;
 using ServiceLayer.Messages;
 
 namespace ServiceLayer.FluentValidation
 {
-	public class ForgotPasswordRequestValidation : AbstractValidator<ForgotPasswordDTO>
+    public class ForgotPasswordRequestValidation : AbstractValidator<ForgotPasswordDTO>
 	{
         public ForgotPasswordRequestValidation()
         {

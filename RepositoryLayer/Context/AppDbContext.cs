@@ -1,10 +1,10 @@
-﻿using EntityLayer.Auth;
+﻿using EntityLayer.Entities.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace RepositoryLayer.Context
 {
-	public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser>(options)
+    public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser>(options)
 	{
 	}
 }

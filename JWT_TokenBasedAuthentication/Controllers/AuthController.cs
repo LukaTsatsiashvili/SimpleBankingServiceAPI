@@ -1,10 +1,10 @@
-﻿using EntityLayer.DTOs;
+﻿using EntityLayer.DTOs.Auth;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Services.Abstract;
 
 namespace JWT_TokenBasedAuthentication.Controllers
 {
-	[Route("api/AuthServices")]
+    [Route("api/AuthServices")]
 	[ApiController]
 	public class AuthController(
 		IUserService userService
@@ -34,7 +34,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			var response = await userService.LoginAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
-			return Ok(response.Message);
+			return Ok(response);
 
 
 		}

@@ -1,10 +1,10 @@
-﻿using EntityLayer.DTOs;
+﻿using EntityLayer.DTOs.Auth;
 using FluentValidation;
 using ServiceLayer.Messages;
 
 namespace ServiceLayer.FluentValidation
 {
-	public class LoginRequestValidation : AbstractValidator<LoginDTO>
+    public class LoginRequestValidation : AbstractValidator<LoginDTO>
 	{
 		public LoginRequestValidation()
 		{

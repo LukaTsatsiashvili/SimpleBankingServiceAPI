@@ -1,8 +1,9 @@
-﻿using EntityLayer.Auth;
-using EntityLayer.DTOs;
+﻿using EntityLayer.DTOs.Auth;
+using EntityLayer.Entities.Auth;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ using System.Text;
 
 namespace ServiceLayer.Extensions
 {
-	public static class ServiceLayerExtension
+    public static class ServiceLayerExtension
 	{
 		public static IServiceCollection LoadServiceLayerExtension(this IServiceCollection services, IConfiguration config)
 		{
@@ -74,6 +75,9 @@ namespace ServiceLayer.Extensions
 			// Email Settings Mapping & Adding EmailService 
 			services.Configure<EmailInformationDTO>(config.GetSection("EmailSettings"));
 			services.AddScoped<IEmailSendMethod, EmailSendMethod>();
+
+			// Add 'HttpContextAccessor' for ImageUpload manipulations
+			services.AddHttpContextAccessor();
 
 			return services;
 		}
