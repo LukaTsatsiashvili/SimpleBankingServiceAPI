@@ -6,6 +6,9 @@ using static ServiceLayer.Responses.ServiceResponses;
 using System;
 using EntityLayer.Entities.Auth;
 using Microsoft.AspNetCore.Hosting;
+using EntityLayer.DTOs.Auth;
+using Microsoft.AspNetCore.Authentication;
+using static System.Collections.Specialized.BitVector32;
 
 namespace ServiceLayer.Services.API.User.Concrete
 {
@@ -53,27 +56,6 @@ namespace ServiceLayer.Services.API.User.Concrete
 			return new ProfilePictureUploadResponse(true, user.ProfileImagePath, "Image uploaded successfully!");
 		}
 
-		public async Task<GeneralResponse> DeleteAccountAsync(string userId)
-		{
-			if (string.IsNullOrEmpty(userId)) return new GeneralResponse(false, "Unable to delete account!");
-
-			var user = await userManager.FindByIdAsync(userId);
-			if (user is null) return new GeneralResponse(false, "User not found!");
-
-			var profilePicture = user.ProfileImagePath;
-			if (!string.IsNullOrEmpty(profilePicture))
-			{
-				var imagePath = $"{environment.ContentRootPath}/Uploads/{user.Email}/{Path.GetFileName(profilePicture)}";
-				File.Delete(imagePath);
-			}
-
-			var result = await userManager.DeleteAsync(user);
-			if (!result.Succeeded) return new GeneralResponse(false, "Failed to delete account!");
-
-			return new GeneralResponse(true, "Account deleted successfully");
-
-		}
-
 		public async Task<GeneralResponse> RemoveProfilePictureAsync(string userId)
 		{
 			if (string.IsNullOrEmpty(userId)) return new GeneralResponse(false, "Unable to remove picture!");
@@ -96,5 +78,41 @@ namespace ServiceLayer.Services.API.User.Concrete
 
 			return new GeneralResponse(true, "Picture deleted successfully");
 		}
+
+		public async Task<GeneralResponse> ChangePasswordAsync(string userId, ChangePasswordDTO model)
+		{
+			if (string.IsNullOrEmpty(userId) || model is null) 
+				return new GeneralResponse(false, "Unable to change password!");
+
+			var user = await userManager.FindByIdAsync(userId);
+			if (user is null) return new GeneralResponse(false, "User not found!");
+
+			var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+			if (!result.Succeeded) return new GeneralResponse(false, "Failed to change password!");
+
+			return new GeneralResponse(true, "Password changed successfully!");
+		}
+
+		public async Task<GeneralResponse> DeleteAccountAsync(string userId)
+		{
+			if (string.IsNullOrEmpty(userId)) return new GeneralResponse(false, "Unable to delete account!");
+
+			var user = await userManager.FindByIdAsync(userId);
+			if (user is null) return new GeneralResponse(false, "User not found!");
+
+			var profilePicture = user.ProfileImagePath;
+			if (!string.IsNullOrEmpty(profilePicture))
+			{
+				var imagePath = $"{environment.ContentRootPath}/Uploads/{user.Email}/{Path.GetFileName(profilePicture)}";
+				File.Delete(imagePath);
+			}
+
+			var result = await userManager.DeleteAsync(user);
+			if (!result.Succeeded) return new GeneralResponse(false, "Failed to delete account!");
+
+			return new GeneralResponse(true, "Account deleted successfully");
+
+		}
+
 	}
 }
