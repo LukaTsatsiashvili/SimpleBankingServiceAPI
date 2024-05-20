@@ -1,13 +1,13 @@
 ﻿using EntityLayer.DTOs.Auth;
 using Microsoft.AspNetCore.Mvc;
-using ServiceLayer.Services.Abstract;
+using ServiceLayer.Services.Auth.Abstract;
 
 namespace JWT_TokenBasedAuthentication.Controllers
 {
     [Route("api/AuthServices")]
 	[ApiController]
 	public class AuthController(
-		IUserService userService
+		IAuthService authService
 		) : ControllerBase
 	{
 
@@ -18,7 +18,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		public async Task<IActionResult> Register([FromBody] UserDTO model)
 		{
 
-			var response = await userService.RegisterUserAsync(model);
+			var response = await authService.RegisterUserAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
 			return Ok(response.Message);
@@ -31,7 +31,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		public async Task<IActionResult> Login([FromBody] LoginDTO model)
 		{
 
-			var response = await userService.LoginAsync(model);
+			var response = await authService.LoginAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
 			return Ok(response);
@@ -44,7 +44,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
 		{
-			var response = await userService.ForgotPasswordAsync(model);
+			var response = await authService.ForgotPasswordAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
 			return Ok(response.Message);
@@ -55,7 +55,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO model)
 		{
-			var response = await userService.ResetPasswordAsync(model);
+			var response = await authService.ResetPasswordAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
 			return Ok(response.Message);

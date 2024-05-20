@@ -3,7 +3,6 @@ using EntityLayer.Entities.Auth;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,18 +10,21 @@ using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Context;
 using ServiceLayer.FluentValidation;
 using ServiceLayer.Helpers;
-using ServiceLayer.Services.Abstract;
-using ServiceLayer.Services.Concrete;
+using ServiceLayer.Services.API.User.Abstract;
+using ServiceLayer.Services.API.User.Concrete;
+using ServiceLayer.Services.Auth.Abstract;
+using ServiceLayer.Services.Auth.Concrete;
 using System.Text;
 
 namespace ServiceLayer.Extensions
 {
-    public static class ServiceLayerExtension
+	public static class ServiceLayerExtension
 	{
 		public static IServiceCollection LoadServiceLayerExtension(this IServiceCollection services, IConfiguration config)
 		{
 			// Add All Services Here 
 
+			services.AddScoped<IAuthService, AuthService>();
 			services.AddScoped<IUserService, UserService>();
 
 			// Add Fluent Validation 
