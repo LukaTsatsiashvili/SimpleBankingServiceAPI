@@ -1,6 +1,7 @@
 ﻿using EntityLayer.DTOs.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ServiceLayer.Helpers;
 using ServiceLayer.Services.API.User.Abstract;
 using System.Security.Claims;
 
@@ -10,7 +11,8 @@ namespace JWT_TokenBasedAuthentication.Controllers
 	[Route("api/UserServices")]
 	[ApiController]
 	public class UserController(
-		IUserService userService
+		IUserService userService,
+		IFileValidator fileValidator
 		) : ControllerBase
 	{
 		
@@ -21,7 +23,8 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		public async Task<IActionResult> UploadProfilePicture([FromForm]ImageUploadDTO model)
 		{
-			ValidateFileUpload(model);
+			var validation = fileValidator.ValidateFile(model);
+			if (!validation.Flag) return BadRequest(validation.Message);
 
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			if (userId is null) return BadRequest("Something went wrong! Please try again later.");
@@ -49,20 +52,20 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		}
 
 		// Check if the uploaded file has the correct extension and size
-		private void ValidateFileUpload(ImageUploadDTO model)
-		{
-			var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
+		//private void ValidateFileUpload(ImageUploadDTO model)
+		//{
+		//	var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-			if (!allowedExtensions.Contains(Path.GetExtension(model.File.FileName)))
-			{
-				ModelState.AddModelError("file", "Only '.jpg', '.jpeg' or '.png' file extensions are supported!");
-			}
+		//	if (!allowedExtensions.Contains(Path.GetExtension(model.File.FileName)))
+		//	{
+		//		ModelState.AddModelError("file", "Only '.jpg', '.jpeg' or '.png' file extensions are supported!");
+		//	}
 
-			if (model.File.Length > 10485760)
-			{
-				ModelState.AddModelError("file", "Only files with size 10MB or less are allowed!");
-			}
-		}
+		//	if (model.File.Length > 10485760)
+		//	{
+		//		ModelState.AddModelError("file", "Only files with size 10MB or less are allowed!");
+		//	}
+		//}
 
 		[HttpDelete("DeleteAccount")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]

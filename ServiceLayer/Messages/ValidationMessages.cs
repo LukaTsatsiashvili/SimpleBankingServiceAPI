@@ -9,7 +9,12 @@
 
 		public static string GreaterThanMessage(string propName, int restriction)
 		{
-			return $"{propName} must be greater than {restriction}!";
+			return $"{propName} must be greater than {restriction} characters!";
+		}
+
+		public static string LessThanMessage(string propName, int restriction)
+		{
+			return $"{propName} must be less than {restriction} characters!";
 		}
 
 		public static string EmailMessage(string propName)

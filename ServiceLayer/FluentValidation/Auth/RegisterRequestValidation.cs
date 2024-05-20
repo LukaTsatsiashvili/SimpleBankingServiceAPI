@@ -2,10 +2,10 @@
 using FluentValidation;
 using ServiceLayer.Messages;
 
-namespace ServiceLayer.FluentValidation
+namespace ServiceLayer.FluentValidation.Auth
 {
     public class RegisterRequestValidation : AbstractValidator<UserDTO>
-	{
+    {
         public RegisterRequestValidation()
         {
             RuleFor(x => x.Email)
@@ -23,6 +23,6 @@ namespace ServiceLayer.FluentValidation
                 .NotNull().WithMessage(ValidationMessages.NullEmptyMessage("Confirm Password"))
                 .Equal(x => x.Password).WithMessage(ValidationMessages.ComparePasswordMessage("Confirm Password", "Password"));
 
-		}
+        }
     }
 }

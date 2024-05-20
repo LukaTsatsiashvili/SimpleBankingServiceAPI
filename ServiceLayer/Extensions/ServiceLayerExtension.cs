@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Context;
-using ServiceLayer.FluentValidation;
+using ServiceLayer.FluentValidation.Auth;
 using ServiceLayer.Helpers;
 using ServiceLayer.Services.API.User.Abstract;
 using ServiceLayer.Services.API.User.Concrete;
@@ -18,7 +18,7 @@ using System.Text;
 
 namespace ServiceLayer.Extensions
 {
-	public static class ServiceLayerExtension
+    public static class ServiceLayerExtension
 	{
 		public static IServiceCollection LoadServiceLayerExtension(this IServiceCollection services, IConfiguration config)
 		{
@@ -26,6 +26,7 @@ namespace ServiceLayer.Extensions
 
 			services.AddScoped<IAuthService, AuthService>();
 			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<IFileValidator, FileValidator>();
 
 			// Add Fluent Validation 
 			services.AddFluentValidationAutoValidation(options =>
