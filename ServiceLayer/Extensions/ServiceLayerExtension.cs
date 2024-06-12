@@ -14,6 +14,7 @@ using ServiceLayer.Services.API.User.Abstract;
 using ServiceLayer.Services.API.User.Concrete;
 using ServiceLayer.Services.Auth.Abstract;
 using ServiceLayer.Services.Auth.Concrete;
+using System.Reflection;
 using System.Text;
 
 namespace ServiceLayer.Extensions
@@ -27,6 +28,7 @@ namespace ServiceLayer.Extensions
 			services.AddScoped<IAuthService, AuthService>();
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IFileValidator, FileValidator>();
+			services.AddScoped<IAccountService, AccountService>();
 
 			// Add Fluent Validation 
 			services.AddFluentValidationAutoValidation(options =>
@@ -81,6 +83,9 @@ namespace ServiceLayer.Extensions
 
 			// Add 'HttpContextAccessor' for ImageUpload manipulations
 			services.AddHttpContextAccessor();
+
+			// Add AutoMapper
+			services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 			return services;
 		}

@@ -1,8 +1,5 @@
 ﻿using EntityLayer.DTOs.Auth;
-using EntityLayer.DTOs.Image;
 using EntityLayer.Entities.Auth;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -15,7 +12,7 @@ using static ServiceLayer.Responses.ServiceResponses;
 
 namespace ServiceLayer.Services.Auth.Concrete
 {
-    public class AuthService(
+	public class AuthService(
         UserManager<AppUser> userManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration config,

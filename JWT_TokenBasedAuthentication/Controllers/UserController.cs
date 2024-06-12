@@ -1,6 +1,5 @@
 ﻿using EntityLayer.DTOs.Auth;
 using EntityLayer.DTOs.Image;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Helpers;
@@ -14,8 +13,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 	[ApiController]
 	public class UserController(
 		IUserService userService,
-		IFileValidator fileValidator,
-		IHttpContextAccessor httpContext
+		IFileValidator fileValidator
 		) : ControllerBase
 	{
 		

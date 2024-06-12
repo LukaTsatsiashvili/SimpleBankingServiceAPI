@@ -1,14 +1,11 @@
-﻿using EntityLayer.DTOs.Image;
+﻿using EntityLayer.DTOs.Auth;
+using EntityLayer.DTOs.Image;
+using EntityLayer.Entities.Auth;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using ServiceLayer.Services.API.User.Abstract;
 using static ServiceLayer.Responses.ServiceResponses;
-using System;
-using EntityLayer.Entities.Auth;
-using Microsoft.AspNetCore.Hosting;
-using EntityLayer.DTOs.Auth;
-using Microsoft.AspNetCore.Authentication;
-using static System.Collections.Specialized.BitVector32;
 
 namespace ServiceLayer.Services.API.User.Concrete
 {
