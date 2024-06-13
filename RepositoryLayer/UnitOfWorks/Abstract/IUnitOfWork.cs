@@ -7,5 +7,10 @@ namespace RepositoryLayer.UnitOfWorks.Abstract
 		void Save();
 		Task SaveAsync();
 		IGenericRepository<T> GetGenericRepository<T>() where T : class;
+
+
+		Task BeginTransactionAsync();
+		Task CommitTransactionAsync();
+		Task RollbackTransactionAsync();
 	}
 }

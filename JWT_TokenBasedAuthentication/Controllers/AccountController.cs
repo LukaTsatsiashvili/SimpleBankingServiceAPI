@@ -25,5 +25,35 @@ namespace JWT_TokenBasedAuthentication.Controllers
 
 			return Ok(response.Message);
 		}
+
+		[HttpGet("GetAccount/{id:guid}")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		public async Task<IActionResult> GetAccount([FromRoute] Guid id)
+		{
+			var result = await service.GetAccountByIdAsync(id);
+
+			if (result.Flag == false) return BadRequest(result.Message);
+
+			return Ok(result.Data);
+		}
+
+		[HttpDelete("DeleteAccount/{id:guid}")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		public async Task<IActionResult> DeleteAccount([FromRoute] Guid id)
+		{
+			var user = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			if (user is null) return BadRequest("Not authorized!");
+
+			var result = await service.RemoveAccountAsync(user, id);
+			if (result.Flag == false) return BadRequest(result.Message);
+
+			return Ok(result.Message);
+		}
 	}
 }

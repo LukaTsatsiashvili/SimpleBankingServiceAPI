@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using EntityLayer.DTOs.User.Account;
-using EntityLayer.Entities.Auth;
+﻿using EntityLayer.Entities.Auth;
 using EntityLayer.Entities.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +12,11 @@ namespace ServiceLayer.Services.API.User.Concrete
 	public class AccountService : IAccountService
 	{
 		private readonly IUnitOfWork _unitOfWork;
-		private readonly IMapper _mapper;
 		private readonly IGenericRepository<Account> _repository;
 		private readonly UserManager<AppUser> _userManager;
-        public AccountService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
+        public AccountService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
         {
 			_unitOfWork = unitOfWork;
-			_mapper = mapper;
             _repository = unitOfWork.GetGenericRepository<Account>();
 			_userManager = userManager;
         }
@@ -42,7 +38,7 @@ namespace ServiceLayer.Services.API.User.Concrete
 				AppUserId = user.Id.ToString(),
 			};
 
-			using (var transaction = _repository.BeginTransactionAsync())
+			using (var transaction = _unitOfWork.BeginTransactionAsync())
 			{
 				try
 				{
@@ -55,18 +51,76 @@ namespace ServiceLayer.Services.API.User.Concrete
 					if (!updateResult.Succeeded) return new GeneralResponse(false, "Failed to update user with new account.");
 
 					await _unitOfWork.SaveAsync();
-					await _repository.CommitTransactionAsync();
+					await _unitOfWork.CommitTransactionAsync();
 
 					return new GeneralResponse(true, "Account created successfully!");
 				}
 				catch (Exception ex)
 				{
-					await _repository.RollbackTransactionAsync();
+					await _unitOfWork.RollbackTransactionAsync();
 					// TODO - Log the exception
 					return new GeneralResponse(false, "An error occurred while creating the account.");
 				}
 			}
 		}
+
+		public async Task<AccountResponse> GetAccountByIdAsync(Guid id)
+		{
+			if (id == Guid.Empty) return new AccountResponse(false, "Id must be provided!", null);
+
+			var account = await _repository
+				.Where(x => x.Id == id)
+				.Include(x => x.SentTransactions)
+				.Include(x => x.ReceivedTransactions)
+				.FirstOrDefaultAsync();
+
+			if (account is null) return new AccountResponse(false, "Failed to get account!", null);
+
+			return new AccountResponse(true, "Account found!", account);
+		
+		}
+
+		public async Task<GeneralResponse> RemoveAccountAsync(string userId, Guid id)
+		{
+			if (string.IsNullOrEmpty(userId) || id == Guid.Empty) return new GeneralResponse(false, "Failed!");
+
+			var user = await _userManager.FindByIdAsync(userId);
+			if (user is null) return new GeneralResponse(false, "Oops! Something went wrong.");
+
+			var entity = await _repository.GetEntityByIdAsync(id);
+			if (entity is null) return new GeneralResponse(false, "Oops! Something went wrong.");
+
+			using (var transaction = _unitOfWork.BeginTransactionAsync())
+			{
+				try
+				{
+					var result = _repository.DeleteEntityAsync(entity);
+					if (result == false) return new GeneralResponse(false, "An error occured while deleting the account");
+
+					var userAccountResult = user.Accounts!.Remove(entity);
+					if (userAccountResult == false) return new GeneralResponse(false, "An error occured while deleting the account");
+
+					var userUpdateResult = await _userManager.UpdateAsync(user);
+					if (!userUpdateResult.Succeeded) return new GeneralResponse(false, "An error occured while deleting the account");
+
+					await _unitOfWork.SaveAsync();
+					await _unitOfWork.CommitTransactionAsync();
+
+					return new GeneralResponse(true, "Account deleted successfully!");
+				}
+				catch(Exception ex)
+				{
+					await _unitOfWork.RollbackTransactionAsync();
+
+					// TODO - Log the exception
+
+					return new GeneralResponse(false, "An error occurred while deleting the account.");
+				}
+			}
+
+		}
+
+
 
 		private async Task<string> UniqueNumber()
 		{
@@ -76,26 +130,11 @@ namespace ServiceLayer.Services.API.User.Concrete
 			do
 			{
 				uniqueNumber = random.Next(1000000000, 1999999999).ToString();
-			} 
-			while(await _repository.Where(x => x.AccountNumber == uniqueNumber).AnyAsync());
+			}
+			while (await _repository.Where(x => x.AccountNumber == uniqueNumber).AnyAsync());
 
 			return uniqueNumber;
 
-		}
-
-		public Task<AccountDTO> GetAccountByIdAsync(string userId)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<List<AccountDTO>> GetAllAccountAsync()
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task RemoveAccountAsync(string userId)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

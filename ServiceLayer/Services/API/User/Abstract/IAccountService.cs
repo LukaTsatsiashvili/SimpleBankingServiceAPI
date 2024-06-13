@@ -5,10 +5,9 @@ namespace ServiceLayer.Services.API.User.Abstract
 {
     public interface IAccountService
 	{
-		Task<List<AccountDTO>> GetAllAccountAsync();
-		Task<AccountDTO> GetAccountByIdAsync(string userId);
+		Task<AccountResponse> GetAccountByIdAsync(Guid id);
 		Task<GeneralResponse> CreateAccountAsync(string userId);
-		Task RemoveAccountAsync(string userId);
+		Task<GeneralResponse> RemoveAccountAsync(string userId, Guid id);
 
 	}
 }

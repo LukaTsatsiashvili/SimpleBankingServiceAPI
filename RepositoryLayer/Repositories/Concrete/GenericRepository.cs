@@ -22,9 +22,12 @@ namespace RepositoryLayer.Repositories.Concrete
 			await _dbSet.AddAsync(entity);
 		}
 
-		public void DeleteEntity(T entity)
+		public bool DeleteEntityAsync(T entity)
 		{
-			_dbSet.Remove(entity);
+			var result = _dbSet.Remove(entity);
+			if (result != null) return true;
+
+			return false;
 		}
 
 		public IQueryable<T> GetAllEntityAsync()
@@ -47,19 +50,5 @@ namespace RepositoryLayer.Repositories.Concrete
 			return _dbSet.Where(predicate);
 		}
 
-		public async Task BeginTransactionAsync()
-		{
-			await _context.Database.BeginTransactionAsync();
-		}
-
-		public async Task CommitTransactionAsync()
-		{
-			await _context.Database.CommitTransactionAsync();
-		}
-
-		public async Task RollbackTransactionAsync()
-		{
-			await _context.Database.RollbackTransactionAsync();
-		}
 	}
 }
