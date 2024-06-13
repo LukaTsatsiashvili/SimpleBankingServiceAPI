@@ -10,6 +10,6 @@ namespace ServiceLayer.Services.API.User.Abstract
 		Task<GetUserInformationResponse> GetUserInformationAsync(string userId);
 		Task<GeneralResponse> RemoveProfilePictureAsync(string userId);
 		Task<GeneralResponse> ChangePasswordAsync(string userId, ChangePasswordDTO model);
-		Task<GeneralResponse> DeleteAccountAsync(string userId);
+		Task<GeneralResponse> DeleteUserAsync(string userId);
 	}
 }

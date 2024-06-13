@@ -29,6 +29,7 @@ namespace ServiceLayer.Extensions
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IFileValidator, FileValidator>();
 			services.AddScoped<IAccountService, AccountService>();
+			services.AddScoped<ITransactionService, TransactionService>();
 
 			// Add Fluent Validation 
 			services.AddFluentValidationAutoValidation(options =>

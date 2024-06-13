@@ -7,10 +7,10 @@
 		public string CreatedAt { get; set; }
 
 
-		public Guid SenderAccountNumber { get; set; }
+		public string SenderAccountNumber { get; set; }
 		public Account SenderAccount { get; set; } = null!;
 
-		public Guid RecipientAccountNumber { get; set; }
+		public string RecipientAccountNumber { get; set; }
 		public Account RecipientAccount { get; set; } = null!;
 
 		public Transaction()

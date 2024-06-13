@@ -112,12 +112,12 @@ namespace ServiceLayer.Services.API.User.Concrete
 			return new GeneralResponse(true, "Password changed successfully!");
 		}
 
-		public async Task<GeneralResponse> DeleteAccountAsync(string userId)
+		public async Task<GeneralResponse> DeleteUserAsync(string userId)
 		{
-			if (string.IsNullOrEmpty(userId)) return new GeneralResponse(false, "Unable to delete account!");
+			if (string.IsNullOrEmpty(userId)) return new GeneralResponse(false, "Invalid request!");
 
 			var user = await userManager.FindByIdAsync(userId);
-			if (user is null) return new GeneralResponse(false, "User not found!");
+			if (user is null) return new GeneralResponse(false, "Invalid request!");
 
 			var profilePicture = user.ProfileImagePath;
 			if (!string.IsNullOrEmpty(profilePicture))

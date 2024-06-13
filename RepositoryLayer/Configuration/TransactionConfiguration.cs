@@ -26,6 +26,7 @@ namespace RepositoryLayer.Configuration
 				.HasOne(x => x.SenderAccount)
 				.WithMany(x => x.SentTransactions)
 				.HasForeignKey(x => x.SenderAccountNumber)
+				.HasPrincipalKey(x => x.AccountNumber)
 				.IsRequired()
 				.OnDelete(DeleteBehavior.Restrict);
 
@@ -33,6 +34,7 @@ namespace RepositoryLayer.Configuration
 				.HasOne(x => x.RecipientAccount)
 				.WithMany(x => x.ReceivedTransactions)
 				.HasForeignKey(x => x.RecipientAccountNumber)
+				.HasPrincipalKey(x => x.AccountNumber)
 				.IsRequired()
 				.OnDelete(DeleteBehavior.Restrict);
 

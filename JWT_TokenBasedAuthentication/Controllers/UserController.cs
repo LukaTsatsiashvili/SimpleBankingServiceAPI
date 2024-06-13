@@ -69,6 +69,10 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		}
 
 		[HttpGet("GetUserInformation")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		public async Task<IActionResult> GetUserInformation()
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -90,7 +94,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			if (userId is null) return BadRequest("Something went wrong! Please try again later.");
 
-			var response = await userService.DeleteAccountAsync(userId);
+			var response = await userService.DeleteUserAsync(userId);
 			if (!response.Flag) return BadRequest(response.Message);
 
 			return Ok(response.Message);
