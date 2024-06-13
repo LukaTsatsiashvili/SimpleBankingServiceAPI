@@ -1,8 +1,8 @@
 ﻿using EntityLayer.Entities.User;
 
-namespace EntityLayer.DTOs.User.Account
+namespace EntityLayer.DTOs.Account
 {
-    public record class AccountDTO(
+    public record AccountDTO(
         string AccountNumber,
         decimal Balance,
         List<Transaction>? SentTransactions,

@@ -8,7 +8,7 @@ namespace RepositoryLayer.Repositories.Abstract
 		Task<T> GetEntityByIdAsync(Guid id);
 		Task AddEntityAsync(T entity);
 		void UpdateEntity(T entity);
-		bool DeleteEntityAsync(T entity);
+		bool DeleteEntity(T entity);
 		IQueryable<T> Where(Expression<Func<T, bool>> predicate);
 
 	}

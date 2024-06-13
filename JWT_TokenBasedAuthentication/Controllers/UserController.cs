@@ -68,6 +68,18 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			return Ok(response.Message);
 		}
 
+		[HttpGet("GetUserInformation")]
+		public async Task<IActionResult> GetUserInformation()
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			if (userId is null) return BadRequest("Unauthorized");
+
+			var result = await userService.GetUserInformationAsync(userId);
+			if (result.Flag == false) return BadRequest(result.Message);
+
+			return Ok(result.Data);
+		}
+
 		[HttpDelete("DeleteAccount")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)]

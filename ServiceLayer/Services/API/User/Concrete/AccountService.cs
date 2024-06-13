@@ -94,7 +94,7 @@ namespace ServiceLayer.Services.API.User.Concrete
 			{
 				try
 				{
-					var result = _repository.DeleteEntityAsync(entity);
+					var result = _repository.DeleteEntity(entity);
 					if (result == false) return new GeneralResponse(false, "An error occured while deleting the account");
 
 					var userAccountResult = user.Accounts!.Remove(entity);

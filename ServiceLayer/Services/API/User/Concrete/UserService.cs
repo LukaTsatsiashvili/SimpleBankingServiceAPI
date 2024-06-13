@@ -1,9 +1,12 @@
-﻿using EntityLayer.DTOs.Auth;
+﻿using AutoMapper;
+using EntityLayer.DTOs.Auth;
 using EntityLayer.DTOs.Image;
+using EntityLayer.DTOs.User;
 using EntityLayer.Entities.Auth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ServiceLayer.Services.API.User.Abstract;
 using static ServiceLayer.Responses.ServiceResponses;
 
@@ -12,7 +15,8 @@ namespace ServiceLayer.Services.API.User.Concrete
 	public class UserService(
 		UserManager<AppUser> userManager,
 		IWebHostEnvironment environment,
-		IHttpContextAccessor httpContextAccessor) : IUserService
+		IHttpContextAccessor httpContextAccessor,
+		IMapper mapper) : IUserService
 	{
 		public async Task<ProfilePictureUploadResponse> UploadProfilePictureAsync(string userId, ImageUploadDTO model)
 		{
@@ -51,6 +55,24 @@ namespace ServiceLayer.Services.API.User.Concrete
 			await userManager.UpdateAsync(user);
 
 			return new ProfilePictureUploadResponse(true, user.ProfileImagePath, "Image uploaded successfully!");
+		}
+
+		public async Task<GetUserInformationResponse> GetUserInformationAsync(string userId)
+		{
+			if (string.IsNullOrEmpty(userId)) return new GetUserInformationResponse(false, "Id must be provided!", null);
+
+			var user = await userManager
+				.Users
+				.Include(x => x.Accounts)				
+				.FirstOrDefaultAsync(x => x.Id == userId);
+
+			if (user is null) return new GetUserInformationResponse(false, "Unauthorized!", null);
+
+			var mappedUser = mapper.Map<UserInformationDTO>(user);
+			if (mappedUser is null)
+				return new GetUserInformationResponse(false, "Something went wrong. Please try again later!", null); 
+
+			return new GetUserInformationResponse(true, "User found successfully!", mappedUser);
 		}
 
 		public async Task<GeneralResponse> RemoveProfilePictureAsync(string userId)

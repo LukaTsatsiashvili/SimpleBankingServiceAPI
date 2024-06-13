@@ -22,7 +22,7 @@ namespace RepositoryLayer.Repositories.Concrete
 			await _dbSet.AddAsync(entity);
 		}
 
-		public bool DeleteEntityAsync(T entity)
+		public bool DeleteEntity(T entity)
 		{
 			var result = _dbSet.Remove(entity);
 			if (result != null) return true;

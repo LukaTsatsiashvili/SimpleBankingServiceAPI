@@ -1,9 +1,8 @@
-﻿using EntityLayer.DTOs.User.Account;
-using static ServiceLayer.Responses.ServiceResponses;
+﻿using static ServiceLayer.Responses.ServiceResponses;
 
 namespace ServiceLayer.Services.API.User.Abstract
 {
-    public interface IAccountService
+	public interface IAccountService
 	{
 		Task<AccountResponse> GetAccountByIdAsync(Guid id);
 		Task<GeneralResponse> CreateAccountAsync(string userId);
