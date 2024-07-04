@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Services.API.User.Abstract;
 using System.Security.Claims;
 
-namespace SimpleBankingServiceAPI.Controllers
+namespace JWT_TokenBasedAuthentication.Controllers
 {
 	[Route("api/TransactionServices")]
 	[Authorize]

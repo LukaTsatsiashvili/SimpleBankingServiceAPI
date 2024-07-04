@@ -6,7 +6,7 @@ using ServiceLayer.Helpers;
 using ServiceLayer.Services.API.User.Abstract;
 using System.Security.Claims;
 
-namespace SimpleBankingServiceAPI.Controllers
+namespace JWT_TokenBasedAuthentication.Controllers
 {
 	[Authorize]
 	[Route("api/UserServices")]
