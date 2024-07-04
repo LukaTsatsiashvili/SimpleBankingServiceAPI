@@ -63,7 +63,7 @@ namespace ServiceLayer.Services.API.User.Concrete
 
 			var user = await userManager
 				.Users
-				.Include(x => x.Accounts)				
+				.Include(x => x.Accounts)
 				.FirstOrDefaultAsync(x => x.Id == userId);
 
 			if (user is null) return new GetUserInformationResponse(false, "Unauthorized!", null);

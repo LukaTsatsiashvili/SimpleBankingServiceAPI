@@ -1,4 +1,6 @@
-﻿using EntityLayer.Entities.Auth;
+﻿using AutoMapper;
+using EntityLayer.DTOs.Account;
+using EntityLayer.Entities.Auth;
 using EntityLayer.Entities.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,15 +16,17 @@ namespace ServiceLayer.Services.API.User.Concrete
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IGenericRepository<Account> _repository;
 		private readonly UserManager<AppUser> _userManager;
-        public AccountService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
-        {
+		private readonly IMapper _mapper;
+		public AccountService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper)
+		{
 			_unitOfWork = unitOfWork;
-            _repository = unitOfWork.GetGenericRepository<Account>();
+			_repository = unitOfWork.GetGenericRepository<Account>();
 			_userManager = userManager;
-        }
+			_mapper = mapper;
+		}
 
 
-        public async Task<GeneralResponse> CreateAccountAsync(string userId)
+		public async Task<GeneralResponse> CreateAccountAsync(string userId)
 		{
 			if (string.IsNullOrEmpty(userId)) return new GeneralResponse(false, "Invalid request!");
 
@@ -74,9 +78,11 @@ namespace ServiceLayer.Services.API.User.Concrete
 				.Include(x => x.ReceivedTransactions)
 				.FirstOrDefaultAsync();
 
+			var mappedAccount = _mapper.Map<AccountDTO>(account);
+
 			if (account is null) return new AccountResponse(false, "Failed to get account!", null);
 
-			return new AccountResponse(true, "Account found!", account);
+			return new AccountResponse(true, "Account found!", mappedAccount);
 		
 		}
 

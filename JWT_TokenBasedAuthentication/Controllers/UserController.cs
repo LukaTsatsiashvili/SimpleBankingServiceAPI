@@ -6,7 +6,7 @@ using ServiceLayer.Helpers;
 using ServiceLayer.Services.API.User.Abstract;
 using System.Security.Claims;
 
-namespace JWT_TokenBasedAuthentication.Controllers
+namespace SimpleBankingServiceAPI.Controllers
 {
 	[Authorize]
 	[Route("api/UserServices")]
@@ -16,13 +16,13 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		IFileValidator fileValidator
 		) : ControllerBase
 	{
-		
+
 		[HttpPost("UploadImage")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		public async Task<IActionResult> UploadProfilePicture([FromForm]ImageUploadDTO model)
+		public async Task<IActionResult> UploadProfilePicture([FromForm] ImageUploadDTO model)
 		{
 			var validation = fileValidator.ValidateFile(model);
 			if (!validation.Flag) return BadRequest(validation.Message);
@@ -64,7 +64,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 
 			var response = await userService.ChangePasswordAsync(userId, model);
 			if (!response.Flag) return BadRequest(response.Message);
-			
+
 			return Ok(response.Message);
 		}
 

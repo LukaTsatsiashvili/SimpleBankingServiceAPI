@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Services.Auth.Abstract;
 
-namespace JWT_TokenBasedAuthentication.Controllers
+namespace SimpleBankingServiceAPI.Controllers
 {
-    [Route("api/AuthServices")]
+	[Route("api/AuthServices")]
 	[ApiController]
 	public class AuthController(
 		IAuthService authService

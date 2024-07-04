@@ -74,30 +74,6 @@ namespace ServiceLayer.Services.Auth.Concrete
             }
         }
 
-        private string GenerateJwtToken(UserSession session)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var userClaims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, session.Id!),
-                new Claim(ClaimTypes.Name, session.Name!),
-                new Claim(ClaimTypes.Email, session.Email!),
-                new Claim(ClaimTypes.Role, session.Role!)
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: config["Jwt:Issuer"],
-                audience: config["Jwt:Audience"],
-                claims: userClaims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: credentials
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
         public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordDTO model)
         {
             var user = await userManager.FindByEmailAsync(model.Email);
@@ -123,6 +99,30 @@ namespace ServiceLayer.Services.Auth.Concrete
             return new ResetPasswordResponse(true, "Password changed successfully");
         }
 
-        
-    }
+
+
+		private string GenerateJwtToken(UserSession session)
+		{
+			var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
+			var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+			var userClaims = new[]
+			{
+				new Claim(ClaimTypes.NameIdentifier, session.Id!),
+				new Claim(ClaimTypes.Name, session.Name!),
+				new Claim(ClaimTypes.Email, session.Email!),
+				new Claim(ClaimTypes.Role, session.Role!)
+			};
+
+			var token = new JwtSecurityToken(
+				issuer: config["Jwt:Issuer"],
+				audience: config["Jwt:Audience"],
+				claims: userClaims,
+				expires: DateTime.Now.AddDays(1),
+				signingCredentials: credentials
+				);
+
+			return new JwtSecurityTokenHandler().WriteToken(token);
+		}
+	}
 }

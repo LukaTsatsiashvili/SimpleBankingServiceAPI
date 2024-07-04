@@ -5,7 +5,7 @@ namespace EntityLayer.DTOs.Account
 	public record AccountDTO(
         string AccountNumber,
         decimal Balance,
-        List<TransactionCreateDTO>? SentTransactions,
-        List<TransactionCreateDTO>? ReceivedTransactions);
+        List<TransactionDTO>? SentTransactions,
+        List<TransactionDTO>? ReceivedTransactions);
 
 }

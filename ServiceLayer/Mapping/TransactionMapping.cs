@@ -13,6 +13,9 @@ namespace ServiceLayer.Mapping
                 .ForMember(x => x.Amount, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(x => x.RecipientAccountNumber, opt => opt.MapFrom(src => src.RecipientAccountNumber))
                 .ReverseMap();
+
+            CreateMap<TransactionDTO, Transaction>().ReverseMap();
+                
         }
     }
 }

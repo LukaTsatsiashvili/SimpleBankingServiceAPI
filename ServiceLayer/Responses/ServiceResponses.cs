@@ -40,7 +40,7 @@ namespace ServiceLayer.Responses
 			bool Flag, 
 			string Message, 
 			string? SenderAccountNumber,
-			TransactionCreateDTO? Transaction
+			TransactionDTO? Transaction
 			);
 	}
 }

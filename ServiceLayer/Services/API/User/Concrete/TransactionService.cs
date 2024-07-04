@@ -94,7 +94,7 @@ namespace ServiceLayer.Services.API.User.Concrete
 					if (!updatedSender.Succeeded || !updatedRecipient.Succeeded)
 						return new TransactionResponse(false, "Insufficient balance!", null, null);
 
-					var mappedTransaction = _mapper.Map<TransactionCreateDTO>(transaction);
+					var mappedTransaction = _mapper.Map<TransactionDTO>(transaction);
 					if (mappedTransaction is null)
 						return new TransactionResponse(false, "Insufficient balance!", null, null);
 
