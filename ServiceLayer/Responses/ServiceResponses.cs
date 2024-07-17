@@ -53,5 +53,11 @@ namespace ServiceLayer.Responses
 			bool Flag,
 			string Message,
 			UserInformationDTO? User);
+
+		public record class GetTransactionHistoryResponse(
+			bool Flag,
+			string Message,
+			List<TransactionDTO>? SentTransactions,
+			List<TransactionDTO>? ReceivedTransactions);
 	}
 }

@@ -7,6 +7,8 @@ using EntityLayer.Entities.Auth;
 using AutoMapper.QueryableExtensions;
 using EntityLayer.DTOs.User;
 using Microsoft.EntityFrameworkCore;
+using EntityLayer.Entities.User;
+using EntityLayer.DTOs.Account;
 
 namespace ServiceLayer.Services.API.User.Concrete
 {
@@ -35,9 +37,46 @@ namespace ServiceLayer.Services.API.User.Concrete
 			return new GetAllUsersResponse(true, "Information loaded successfully!", users);
 		}
 
-		public Task<GetSingleUserResponse> GetSingleUserAsync()
+		public async Task<GetSingleUserResponse> GetSingleUserAsync(Guid id)
 		{
-			throw new NotImplementedException();
+
+			#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+			AppUser user = await _repository
+				.Where(x => x.Id == id.ToString())
+				.Include(x => x.Accounts)
+				.FirstOrDefaultAsync();
+			#pragma warning restore CS8600
+
+			if (user is null) return new GetSingleUserResponse(false, "Unable to load user information!", null);
+
+			UserInformationDTO mappedUser = _mapper.Map<UserInformationDTO>(user);
+
+			if (mappedUser is null) return new GetSingleUserResponse(false, "Something went wrong!", null);
+
+			return new GetSingleUserResponse(true, "User loaded successfully!", mappedUser);
+		}
+
+		public async Task<GetTransactionHistoryResponse> GetUserTransactionsAsync(Guid id)
+		{
+			#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+			Account userAccount = await _unitOfWork
+				.GetGenericRepository<Account>()
+				.Where(x => x.AppUserId == id.ToString())
+				.Include(sentTransactions => sentTransactions.SentTransactions)
+				.Include(receivedTrasnactions => receivedTrasnactions.ReceivedTransactions)
+				.FirstOrDefaultAsync();
+			#pragma warning restore CS8600
+
+			if (userAccount is null) 
+				return new GetTransactionHistoryResponse(false, "Unable to load transactions!", null, null);
+
+			var mappedAccount = _mapper.Map<AccountDTO>(userAccount);
+
+			return new GetTransactionHistoryResponse(
+				true,
+				"Transactions loaded successfully!",
+				mappedAccount.SentTransactions,
+				mappedAccount.ReceivedTransactions);
 		}
 	}
 }
