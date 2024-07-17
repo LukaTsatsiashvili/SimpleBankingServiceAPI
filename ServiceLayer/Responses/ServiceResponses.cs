@@ -1,4 +1,5 @@
 ﻿using EntityLayer.DTOs.Transaction;
+using EntityLayer.DTOs.User;
 
 namespace ServiceLayer.Responses
 {
@@ -42,5 +43,15 @@ namespace ServiceLayer.Responses
 			string? SenderAccountNumber,
 			TransactionDTO? Transaction
 			);
+
+		public record class GetAllUsersResponse(
+			bool Flag,
+			string Message,
+			List<UserInformationDTO>? Users);
+
+		public record class GetSingleUserResponse(
+			bool Flag,
+			string Message,
+			UserInformationDTO? User);
 	}
 }
