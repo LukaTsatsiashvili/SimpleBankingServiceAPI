@@ -59,5 +59,6 @@ namespace ServiceLayer.Responses
 			string Message,
 			List<TransactionDTO>? SentTransactions,
 			List<TransactionDTO>? ReceivedTransactions);
+
 	}
 }

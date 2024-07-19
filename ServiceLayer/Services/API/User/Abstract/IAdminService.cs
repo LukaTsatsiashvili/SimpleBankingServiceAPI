@@ -1,4 +1,4 @@
-﻿using EntityLayer.DTOs.Transaction;
+﻿using EntityLayer.DTOs.User;
 using static ServiceLayer.Responses.ServiceResponses;
 
 namespace ServiceLayer.Services.API.User.Abstract
@@ -8,5 +8,6 @@ namespace ServiceLayer.Services.API.User.Abstract
 		Task<GetAllUsersResponse> GetAllUsersAsync();
 		Task<GetSingleUserResponse> GetSingleUserAsync(Guid id);
 		Task<GetTransactionHistoryResponse> GetUserTransactionsAsync(Guid id);
+		Task<GeneralResponse> UpdateUserInformationAsync(Guid id, UpdateUsersInformationDTO model);
 	}
 }

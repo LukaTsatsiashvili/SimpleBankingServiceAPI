@@ -26,5 +26,20 @@
 		{
 			return $"{propName} and {secondPropName} must be same!";
 		}
+
+		public static string NoWhiteSpaceMessage(string propName)
+		{
+			return $"{propName} must not contain white spaces!";
+		}
+
+		public static string PhoneNumberFormatMessage(string propName)
+		{
+			return $"{propName} contains an incorrect format!";
+		}
+
+		public static string MustBeEqualOfConcreteNumber(string propName, int restriction)
+		{
+			return $"{propName} must be equal of {restriction} digits!";
+		}
 	}
 }

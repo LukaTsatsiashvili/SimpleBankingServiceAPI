@@ -11,6 +11,8 @@ namespace ServiceLayer.Mapping
             CreateMap<AppUser, UserInformationDTO>()
                 .ForMember(dest => dest.Account, src => src.MapFrom(x => x.Accounts))
                 .ReverseMap();
+
+            CreateMap<AppUser, UpdateUsersInformationDTO>().ReverseMap();
         }
     }
 }

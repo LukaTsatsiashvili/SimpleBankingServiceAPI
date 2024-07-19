@@ -9,6 +9,7 @@ using EntityLayer.DTOs.User;
 using Microsoft.EntityFrameworkCore;
 using EntityLayer.Entities.User;
 using EntityLayer.DTOs.Account;
+using ServiceLayer.Extensions.UserExtensionMethods;
 
 namespace ServiceLayer.Services.API.User.Concrete
 {
@@ -77,6 +78,27 @@ namespace ServiceLayer.Services.API.User.Concrete
 				"Transactions loaded successfully!",
 				mappedAccount.SentTransactions,
 				mappedAccount.ReceivedTransactions);
+		}
+
+		public async Task<GeneralResponse> UpdateUserInformationAsync(Guid id, UpdateUsersInformationDTO model)
+		{
+			#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+			AppUser existingUser = await _repository
+				.Where(x => x.Id == id.ToString())
+				.FirstOrDefaultAsync();
+			#pragma warning restore CS8600 
+			if (existingUser is null) return new GeneralResponse(false, "Unable to update user!");
+
+			AppUser updatedUser = _mapper.Map(model, existingUser);
+			if (updatedUser is null) return new GeneralResponse(false, "Unable to update user!");
+
+			// Using extension method to update normalized fields of user
+			existingUser.UpdateNormalizedFields();
+
+			_repository.UpdateEntity(updatedUser);
+			await _unitOfWork.SaveAsync();
+
+			return new GeneralResponse(true, "User updated successfully!");
 		}
 	}
 }

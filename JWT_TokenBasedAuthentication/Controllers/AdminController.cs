@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using EntityLayer.DTOs.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Services.API.User.Abstract;
 
@@ -50,6 +51,21 @@ namespace JWT_TokenBasedAuthentication.Controllers
 
 			var result = await service.GetUserTransactionsAsync(id);
 
+			if (result.Flag == false) return BadRequest(result.Message);
+
+			return Ok(result);
+		}
+
+		[HttpPut("UpdateUserInformation/{id:guid}")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		public async Task<IActionResult> UpdateUserInformation(Guid id, [FromBody] UpdateUsersInformationDTO model)
+		{
+			if (id == Guid.Empty || model is null) return BadRequest("Provide proper information!");
+			
+			var result = await service.UpdateUserInformationAsync(id, model);
 			if (result.Flag == false) return BadRequest(result.Message);
 
 			return Ok(result);
