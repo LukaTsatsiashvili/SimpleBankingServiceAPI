@@ -3,11 +3,14 @@ using ServiceLayer.Extensions;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.Extensions.FileProviders;
+using JWT_TokenBasedAuthentication.Extension;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Host.SerilogConfiguration();
 
 builder.Services.LoadRepositoryLayerExtension(builder.Configuration);
 builder.Services.LoadServiceLayerExtension(builder.Configuration);

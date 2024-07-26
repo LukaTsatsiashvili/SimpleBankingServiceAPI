@@ -12,6 +12,10 @@ namespace JWT_TokenBasedAuthentication.Controllers
 	public class TransactionController(ITransactionService service) : ControllerBase
 	{
 		[HttpPost("CreateTransaction")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		public async Task<IActionResult> CreateTransaction([FromBody] TransactionCreateDTO model)
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
