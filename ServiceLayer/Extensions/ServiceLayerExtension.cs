@@ -3,6 +3,7 @@ using EntityLayer.Entities.Auth;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Context;
 using ServiceLayer.FluentValidation.Auth;
 using ServiceLayer.Helpers;
+using ServiceLayer.Middlewares;
 using ServiceLayer.Services.API.User.Abstract;
 using ServiceLayer.Services.API.User.Concrete;
 using ServiceLayer.Services.Auth.Abstract;
@@ -90,6 +92,11 @@ namespace ServiceLayer.Extensions
 			services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 			return services;
+		}
+
+		public static IApplicationBuilder UseGlobalExceptionMiddleware(this IApplicationBuilder app)
+		{
+			return app.UseMiddleware<ExceptionHandlerMiddleware>();
 		}
 	}
 }

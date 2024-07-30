@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using ServiceLayer.Middlewares;
 
 namespace JWT_TokenBasedAuthentication.Extension
 {
@@ -10,6 +11,6 @@ namespace JWT_TokenBasedAuthentication.Extension
 			{
 				loggerConfig.ReadFrom.Configuration(context.Configuration);
 			});
-		}
+		}		
 	}
 }

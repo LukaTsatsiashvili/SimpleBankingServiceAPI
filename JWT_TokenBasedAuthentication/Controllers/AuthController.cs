@@ -30,12 +30,10 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<IActionResult> Login([FromBody] LoginDTO model)
 		{
-
 			var response = await authService.LoginAsync(model);
 			if (!response.Flag) return BadRequest(response.Message);
 
 			return Ok(response);
-
 
 		}
 

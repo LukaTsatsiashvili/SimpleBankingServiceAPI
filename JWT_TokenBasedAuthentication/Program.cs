@@ -1,9 +1,9 @@
+using JWT_TokenBasedAuthentication.Extension;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.OpenApi.Models;
 using RepositoryLayer.Extensions;
 using ServiceLayer.Extensions;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using Microsoft.Extensions.FileProviders;
-using JWT_TokenBasedAuthentication.Extension;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +40,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseGlobalExceptionMiddleware();
 
 app.UseHttpsRedirection();
 
