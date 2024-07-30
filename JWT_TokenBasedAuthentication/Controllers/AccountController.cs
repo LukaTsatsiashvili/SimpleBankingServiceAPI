@@ -21,7 +21,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			if (userId is null) return BadRequest("Invalid request!");
 
 			var response = await service.CreateAccountAsync(userId);
-			if (response.Flag == false) return BadRequest("Failed to create account!");
+			if (!response.Flag) return BadRequest("Failed to create account!");
 
 			return Ok(response.Message);
 		}
@@ -35,7 +35,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		{
 			var result = await service.GetAccountByIdAsync(id);
 
-			if (result.Flag == false) return BadRequest(result.Message);
+			if (!result.Flag) return BadRequest(result.Message);
 
 			return Ok(result.Data);
 		}
@@ -51,7 +51,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			if (user is null) return BadRequest("Not authorized!");
 
 			var result = await service.RemoveAccountAsync(user, id);
-			if (result.Flag == false) return BadRequest(result.Message);
+			if (!result.Flag) return BadRequest(result.Message);
 
 			return Ok(result.Message);
 		}

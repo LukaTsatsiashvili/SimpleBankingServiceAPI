@@ -19,7 +19,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		{
 			var result = await service.GetAllUsersAsync();
 
-			if (result.Flag == false) return BadRequest(result.Message);
+			if (!result.Flag) return BadRequest(result.Message);
 
 			return Ok(result);
 		}
@@ -35,7 +35,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 
 			var result = await service.GetSingleUserAsync(id);
 
-			if (result.Flag == false) return BadRequest(result.Message);
+			if (!result.Flag) return BadRequest(result.Message);
 
 			return Ok(result);
 		}
@@ -51,7 +51,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 
 			var result = await service.GetUserTransactionsAsync(id);
 
-			if (result.Flag == false) return BadRequest(result.Message);
+			if (!result.Flag) return BadRequest(result.Message);
 
 			return Ok(result);
 		}
@@ -66,7 +66,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			if (id == Guid.Empty || model is null) return BadRequest("Provide proper information!");
 			
 			var result = await service.UpdateUserInformationAsync(id, model);
-			if (result.Flag == false) return BadRequest(result.Message);
+			if (!result.Flag) return BadRequest(result.Message);
 
 			return Ok(result);
 		}

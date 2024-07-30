@@ -79,7 +79,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			if (userId is null) return BadRequest("Unauthorized");
 
 			var result = await userService.GetUserInformationAsync(userId);
-			if (result.Flag == false) return BadRequest(result.Message);
+			if (!result.Flag) return BadRequest(result.Message);
 
 			return Ok(result.Data);
 		}

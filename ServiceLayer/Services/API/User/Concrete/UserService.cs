@@ -89,7 +89,7 @@ namespace ServiceLayer.Services.API.User.Concrete
 			if (File.Exists(picturePath))
 			{
 				File.Delete(picturePath);
-			};
+			}
 
 			user.ProfileImagePath = null;
 			var result = await userManager.UpdateAsync(user);

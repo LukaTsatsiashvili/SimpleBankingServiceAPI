@@ -22,7 +22,7 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			if (userId is null || model is null) return BadRequest("Invalid Request!");
 
 			var result = await service.CreateTransactionAsync(userId, model);
-			if (result.Flag == false) return BadRequest(result.Message);
+			if (!result.Flag) return BadRequest(result.Message);
 
 			return Ok(result);
 		}

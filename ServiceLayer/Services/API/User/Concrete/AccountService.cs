@@ -144,14 +144,14 @@ namespace ServiceLayer.Services.API.User.Concrete
 				try
 				{
 					var result = _repository.DeleteEntity(entity);
-					if (result == false)
+					if (!result)
 					{
 						_logger.LogError("Failed to delete account entity for accountId: {AccountId}", id);
 						return new GeneralResponse(false, "An error occured while deleting the account");
 					}
 
 					var userAccountResult = user.Accounts!.Remove(entity);
-					if (userAccountResult == false)
+					if (!userAccountResult)
 					{
 						_logger.LogError("Failed to remove account from user's account list for userId: {UserId}", userId);
 						return new GeneralResponse(false, "An error occured while deleting the account");

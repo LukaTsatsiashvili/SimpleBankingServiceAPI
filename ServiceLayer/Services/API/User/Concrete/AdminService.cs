@@ -25,7 +25,7 @@ namespace ServiceLayer.Services.API.User.Concrete
 			_mapper = mapper;
 			_repository = _unitOfWork.GetGenericRepository<AppUser>();
 		}
-
+		
 		public async Task<GetAllUsersResponse> GetAllUsersAsync()
 		{
 			var users = await _repository

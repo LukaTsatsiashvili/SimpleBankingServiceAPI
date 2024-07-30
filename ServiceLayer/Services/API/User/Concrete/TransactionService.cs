@@ -34,7 +34,7 @@ namespace ServiceLayer.Services.API.User.Concrete
 			string senderId,
 			TransactionCreateDTO model)
 		{
-			_logger.LogInformation("Started transaction process for SenderId: {senderId}", senderId);
+			_logger.LogInformation("Started transaction process for SenderId: {SenderId}", senderId);
 
 			// Validate input parameters
 			if (string.IsNullOrEmpty(senderId) || model is null)
@@ -145,7 +145,6 @@ namespace ServiceLayer.Services.API.User.Concrete
 					// If an exception occurred, rollback the transaction
 					await _unitOfWork.RollbackTransactionAsync();
 
-					// TODO - Lg exception
 					_logger.LogError(ex, "An error occurred while creating transaction for senderId: {SenderId}", senderId);
 
 					return new TransactionResponse(false, "An error occured while creating transaction!", null, null);
