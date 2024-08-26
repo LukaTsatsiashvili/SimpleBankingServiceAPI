@@ -60,5 +60,12 @@ namespace ServiceLayer.Responses
 			List<TransactionDTO>? SentTransactions,
 			List<TransactionDTO>? ReceivedTransactions);
 
+		public record class GenerateUserExcelFileResponse(
+			bool Flag,
+			string Message,
+			byte[] File,
+			string FileName,
+			string ContentType);
+
 	}
 }

@@ -9,5 +9,7 @@ namespace ServiceLayer.Services.API.User.Abstract
 		Task<GetSingleUserResponse> GetSingleUserAsync(Guid id);
 		Task<GetTransactionHistoryResponse> GetUserTransactionsAsync(Guid id);
 		Task<GeneralResponse> UpdateUserInformationAsync(Guid id, UpdateUsersInformationDTO model);
+
+		Task<GenerateUserExcelFileResponse> GenerateUserExcelFileAsync();
 	}
 }

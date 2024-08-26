@@ -1,15 +1,17 @@
-﻿using static ServiceLayer.Responses.ServiceResponses;
-using ServiceLayer.Services.API.User.Abstract;
-using RepositoryLayer.UnitOfWorks.Abstract;
-using AutoMapper;
-using RepositoryLayer.Repositories.Abstract;
-using EntityLayer.Entities.Auth;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using EntityLayer.DTOs.User;
-using Microsoft.EntityFrameworkCore;
-using EntityLayer.Entities.User;
+using ClosedXML.Excel;
 using EntityLayer.DTOs.Account;
+using EntityLayer.DTOs.User;
+using EntityLayer.Entities.Auth;
+using EntityLayer.Entities.User;
+using Microsoft.EntityFrameworkCore;
+using RepositoryLayer.Repositories.Abstract;
+using RepositoryLayer.UnitOfWorks.Abstract;
 using ServiceLayer.Extensions.UserExtensionMethods;
+using ServiceLayer.Services.API.User.Abstract;
+using System.Data;
+using static ServiceLayer.Responses.ServiceResponses;
 
 namespace ServiceLayer.Services.API.User.Concrete
 {
@@ -25,7 +27,41 @@ namespace ServiceLayer.Services.API.User.Concrete
 			_mapper = mapper;
 			_repository = _unitOfWork.GetGenericRepository<AppUser>();
 		}
-		
+
+		public Task<GenerateUserExcelFileResponse> GenerateUserExcelFileAsync()
+		{
+			DataTable userData = GetUserData();
+			if (userData is null || userData.Rows.Count == 0)
+			{
+				return Task.FromResult(new GenerateUserExcelFileResponse(
+					false,
+					"An error occurred while getting data",
+					[],
+					string.Empty,
+					string.Empty));
+			}
+
+			using (XLWorkbook wb = new())
+			{
+				var ws = wb.AddWorksheet(userData, "User Records");
+				ws.Columns().AdjustToContents();
+
+				using (MemoryStream ms = new())
+				{
+					wb.SaveAs(ms);
+					var response = new GenerateUserExcelFileResponse(
+						true,
+						"Excel file generated successfully!",
+						ms.ToArray(),
+						"UserExport.xlsx",
+						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+						);
+
+					return Task.FromResult(response);
+				}
+			}
+		}
+
 		public async Task<GetAllUsersResponse> GetAllUsersAsync()
 		{
 			var users = await _repository
@@ -41,12 +77,12 @@ namespace ServiceLayer.Services.API.User.Concrete
 		public async Task<GetSingleUserResponse> GetSingleUserAsync(Guid id)
 		{
 
-			#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 			AppUser user = await _repository
 				.Where(x => x.Id == id.ToString())
 				.Include(x => x.Accounts)
 				.FirstOrDefaultAsync();
-			#pragma warning restore CS8600
+#pragma warning restore CS8600
 
 			if (user is null) return new GetSingleUserResponse(false, "Unable to load user information!", null);
 
@@ -59,16 +95,16 @@ namespace ServiceLayer.Services.API.User.Concrete
 
 		public async Task<GetTransactionHistoryResponse> GetUserTransactionsAsync(Guid id)
 		{
-			#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 			Account userAccount = await _unitOfWork
 				.GetGenericRepository<Account>()
 				.Where(x => x.AppUserId == id.ToString())
 				.Include(sentTransactions => sentTransactions.SentTransactions)
 				.Include(receivedTrasnactions => receivedTrasnactions.ReceivedTransactions)
 				.FirstOrDefaultAsync();
-			#pragma warning restore CS8600
+#pragma warning restore CS8600
 
-			if (userAccount is null) 
+			if (userAccount is null)
 				return new GetTransactionHistoryResponse(false, "Unable to load transactions!", null, null);
 
 			var mappedAccount = _mapper.Map<AccountDTO>(userAccount);
@@ -82,11 +118,11 @@ namespace ServiceLayer.Services.API.User.Concrete
 
 		public async Task<GeneralResponse> UpdateUserInformationAsync(Guid id, UpdateUsersInformationDTO model)
 		{
-			#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 			AppUser existingUser = await _repository
 				.Where(x => x.Id == id.ToString())
 				.FirstOrDefaultAsync();
-			#pragma warning restore CS8600 
+#pragma warning restore CS8600
 			if (existingUser is null) return new GeneralResponse(false, "Unable to update user!");
 
 			AppUser updatedUser = _mapper.Map(model, existingUser);
@@ -99,6 +135,35 @@ namespace ServiceLayer.Services.API.User.Concrete
 			await _unitOfWork.SaveAsync();
 
 			return new GeneralResponse(true, "User updated successfully!");
+		}
+
+
+		// Private method for generating excel file (contains data for excel file)
+		private DataTable GetUserData()
+		{
+			DataTable dt = new();
+			dt.TableName = "UserData";
+			dt.Columns.Add("Id", typeof(string));
+			dt.Columns.Add("Name", typeof(string));
+			dt.Columns.Add("Email", typeof(string));
+			dt.Columns.Add("PhoneNumber", typeof(string));
+
+			var usersList = _repository.GetAllEntityAsync().ToList();
+
+			if (usersList.Count > 0)
+			{
+				usersList.ForEach(item =>
+				{
+					string phoneNumber = string.IsNullOrWhiteSpace(item.PhoneNumber) ? "Not Provided!" : item.PhoneNumber; 
+					dt.Rows.Add(
+						item.Id,
+						item.UserName,
+						item.Email,
+						phoneNumber);
+				});
+			}
+
+			return dt;
 		}
 	}
 }
