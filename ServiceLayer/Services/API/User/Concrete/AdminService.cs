@@ -5,6 +5,7 @@ using EntityLayer.DTOs.Account;
 using EntityLayer.DTOs.User;
 using EntityLayer.Entities.Auth;
 using EntityLayer.Entities.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Repositories.Abstract;
 using RepositoryLayer.UnitOfWorks.Abstract;
@@ -20,17 +21,19 @@ namespace ServiceLayer.Services.API.User.Concrete
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IGenericRepository<AppUser> _repository;
 		private readonly IMapper _mapper;
+		private readonly UserManager<AppUser> _userManager;
 
-		public AdminService(IUnitOfWork unitOfWork, IMapper mapper)
+		public AdminService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 			_repository = _unitOfWork.GetGenericRepository<AppUser>();
+			_userManager = userManager;
 		}
 
-		public Task<GenerateUserExcelFileResponse> GenerateUserExcelFileAsync()
+		public Task<GenerateUserExcelFileResponse> GenerateUserExcelFileAsync(Guid? id)
 		{
-			DataTable userData = GetUserData();
+			DataTable userData = GetUserData(id);
 			if (userData is null || userData.Rows.Count == 0)
 			{
 				return Task.FromResult(new GenerateUserExcelFileResponse(
@@ -139,7 +142,7 @@ namespace ServiceLayer.Services.API.User.Concrete
 
 
 		// Private method for generating excel file (contains data for excel file)
-		private DataTable GetUserData()
+		private DataTable GetUserData(Guid? userId)
 		{
 			DataTable dt = new();
 			dt.TableName = "UserData";
@@ -147,6 +150,30 @@ namespace ServiceLayer.Services.API.User.Concrete
 			dt.Columns.Add("Name", typeof(string));
 			dt.Columns.Add("Email", typeof(string));
 			dt.Columns.Add("PhoneNumber", typeof(string));
+			dt.Columns.Add("UserRole", typeof(string));
+
+			if (userId != Guid.Empty && userId != null)
+			{
+				var singleUser = _repository
+					.Where(user => user.Id == userId.ToString())
+					.FirstOrDefault();
+
+				if (singleUser is not null)
+				{
+
+					string phoneNumber = string.IsNullOrWhiteSpace(singleUser.PhoneNumber) ? "Not Provided!" : singleUser.PhoneNumber;
+					string role = string.Join(", ", _userManager.GetRolesAsync(singleUser).Result);
+					dt.Rows.Add(
+						singleUser.Id,
+						singleUser.UserName,
+						singleUser.Email,
+						phoneNumber,
+						role);
+				}
+
+				return dt;
+			}
+
 
 			var usersList = _repository.GetAllEntityAsync().ToList();
 
@@ -155,11 +182,13 @@ namespace ServiceLayer.Services.API.User.Concrete
 				usersList.ForEach(item =>
 				{
 					string phoneNumber = string.IsNullOrWhiteSpace(item.PhoneNumber) ? "Not Provided!" : item.PhoneNumber; 
+					string roles = string.Join(", ", _userManager.GetRolesAsync(item).Result);
 					dt.Rows.Add(
 						item.Id,
 						item.UserName,
 						item.Email,
-						phoneNumber);
+						phoneNumber,
+						roles);
 				});
 			}
 
