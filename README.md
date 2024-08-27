@@ -1,50 +1,63 @@
-SimpleBankingServiceAPI
-Welcome to SimpleBankingServiceAPI! 🚀 This ASP.NET Core Web API provides robust services for managing user accounts, transactions, and profiles. 
-It emphasizes security, efficiency, and a user-friendly experience.
+# SimpleBankingServiceAPI
 
-Features
+Welcome to **SimpleBankingServiceAPI**! 🚀 This ASP.NET Core Web API provides robust services for managing user accounts, transactions, and profiles. It emphasizes security, efficiency, and a user-friendly experience.
 
-User Management 🔐
+## Features
 
-Forgot and Reset Password functionality.
-Secure Profile Picture Upload and Delete options.
-Change Password capability.
+### User Management 🔐
 
-Account & Transaction Services 💳
+- Forgot and Reset Password functionality.
+- Secure Profile Picture Upload and Delete options.
+- Change Password capability.
 
-Account and Transaction entities with create and manage functionality.
-Retrieve user information and transaction history.
+### Account & Transaction Services 💳
 
-Admin Services 🛠️
+- Account and Transaction entities with create and manage functionality.
+- Retrieve user information and transaction history.
 
-Admin Controller with user information management and transaction handling.
-Update user information and generate Excel reports.
+### Admin Services 🛠️
 
-Logging & Error Handling 📝
+- Admin Controller with user information management and transaction handling.
+- Update user information and generate Excel reports.
 
-Integrated Serilog for detailed application logging.
-Global Exception Handler middleware for improved error management.
+### Logging & Error Handling 📝
 
-Reporting 📊
+- Integrated Serilog for detailed application logging.
+- Global Exception Handler middleware for improved error management.
 
-Generate and export user information to Excel files.
-Optimized Excel file generation for performance and reliability.
+### Reporting 📊
 
-The app is under development and new functionality is added daily.
+- Generate and export user information to Excel files.
+- Optimized Excel file generation for performance and reliability.
+  
 
-Getting Started
+### **The app is under development and new functionality is added daily.**
 
-Clone the repository:
-git clone https://github.com/your-username/SimpleBankingServiceAPI.git
 
-Navigate to the project directory:
-cd SimpleBankingServiceAPI
+## Getting Started
 
-Run the application:
-dotnet run
+1. **Clone the repository:**
 
-Access the API:
-Swagger UI: http://localhost:5078/swagger
+    ```bash
+    git clone https://github.com/your-username/SimpleBankingServiceAPI.git
+    ```
 
-Contributing
+2. **Navigate to the project directory:**
+
+    ```bash
+    cd SimpleBankingServiceAPI
+    ```
+
+3. **Run the application:**
+
+    ```bash
+    dotnet run
+    ```
+
+4. **Access the API:**
+
+    Swagger UI: [http://localhost:5078/swagger](http://localhost:5078/swagger)
+
+## Contributing
+
 Feel free to open issues or submit pull requests. Contributions are welcome!
