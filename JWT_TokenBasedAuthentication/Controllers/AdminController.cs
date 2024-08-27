@@ -76,9 +76,10 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		public async Task<IActionResult> GenerateUserExcelFile()
+		public async Task<IActionResult> GenerateUserExcelFile([FromQuery] Guid? id)
 		{
-			var result = await service.GenerateUserExcelFileAsync();
+
+			var result = await service.GenerateUserExcelFileAsync(id);
 
 			if (!result.Flag) return BadRequest(result.Message);
 
