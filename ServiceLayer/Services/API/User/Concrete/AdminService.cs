@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using EntityLayer.DTOs.Account;
 using EntityLayer.DTOs.User;
+using EntityLayer.Entities;
 using EntityLayer.Entities.Auth;
 using EntityLayer.Entities.User;
 using Microsoft.AspNetCore.Identity;
@@ -31,12 +33,12 @@ namespace ServiceLayer.Services.API.User.Concrete
 			_userManager = userManager;
 		}
 
-		public Task<GenerateUserExcelFileResponse> GenerateUserExcelFileAsync(Guid? id)
+		public Task<GenerateExcelFileResponse> GenerateUserExcelFileAsync(Guid? id)
 		{
 			DataTable userData = GetUserData(id);
 			if (userData is null || userData.Rows.Count == 0)
 			{
-				return Task.FromResult(new GenerateUserExcelFileResponse(
+				return Task.FromResult(new GenerateExcelFileResponse(
 					false,
 					"An error occurred while getting data",
 					[],
@@ -52,13 +54,45 @@ namespace ServiceLayer.Services.API.User.Concrete
 				using (MemoryStream ms = new())
 				{
 					wb.SaveAs(ms);
-					var response = new GenerateUserExcelFileResponse(
+					var response = new GenerateExcelFileResponse(
 						true,
 						"Excel file generated successfully!",
 						ms.ToArray(),
 						"UserExport.xlsx",
 						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 						);
+
+					return Task.FromResult(response);
+				}
+			}
+		}
+		public Task<GenerateExcelFileResponse> GenerateAuditLogsExcelFileAsync()
+		{
+			DataTable auditLogsData = GetAuditLogsData();
+			if (auditLogsData is null || auditLogsData.Rows.Count == 0)
+			{
+				return Task.FromResult(new GenerateExcelFileResponse(
+					false,
+					"An error occurred while getting data",
+					[],
+					string.Empty,
+					string.Empty));
+			}
+
+			using(XLWorkbook wb = new())
+			{
+				var ws = wb.AddWorksheet(auditLogsData, "Audit Log Records");
+				ws.Columns().AdjustToContents();
+
+				using(MemoryStream ms = new())
+				{
+					wb.SaveAs(ms);
+					var response = new GenerateExcelFileResponse(
+						true,
+						"Excel file generated successfully",
+						ms.ToArray(),
+						"AuditLogExport.xlsx",
+						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
 					return Task.FromResult(response);
 				}
@@ -194,5 +228,38 @@ namespace ServiceLayer.Services.API.User.Concrete
 
 			return dt;
 		}
+
+		private DataTable GetAuditLogsData()
+		{
+			DataTable dt = new();
+			dt.TableName = "AuditLogsData";
+			dt.Columns.Add("id", typeof(int));
+			dt.Columns.Add("UserEmail", typeof(string));
+			dt.Columns.Add("EntityName", typeof(string));
+			dt.Columns.Add("Action", typeof(string));
+			dt.Columns.Add("TimeStamp", typeof(DateTime));
+			dt.Columns.Add("Changes", typeof(string));
+
+			var auditLogsList = _unitOfWork
+				.GetGenericRepository<AuditLog>()
+				.GetAllEntityAsync()
+				.ToList();
+
+			if(auditLogsList.Count > 0)
+			{
+				auditLogsList.ForEach(item =>
+				{
+					dt.Rows.Add(
+						item.Id,
+						item.UserEmail,
+						item.EntityName,
+						item.Action,
+						item.TimeStamp,
+						item.Changes);
+				});
+			}
+			return dt;
+		}
+
 	}
 }

@@ -85,5 +85,19 @@ namespace JWT_TokenBasedAuthentication.Controllers
 
 			return File(result.File, result.ContentType, result.FileName);
 		}
+
+		[HttpGet("GenerateAuditLogExcelFile")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		public async Task<IActionResult> GenerateAuditLogExcelFile()
+		{
+			var result = await service.GenerateAuditLogsExcelFileAsync();
+
+			if (!result.Flag) return BadRequest(result.Message);
+
+			return File(result.File, result.ContentType, result.FileName);
+		}
 	}
 }
