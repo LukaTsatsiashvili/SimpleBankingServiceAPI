@@ -71,6 +71,18 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			return Ok(result);
 		}
 
+		[HttpPost("CreateUser")]
+		public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO model)
+		{
+			if (model == null) return BadRequest("Model is empty!");
+
+			var result = await service.CreateUserAsync(model);
+			if (!result.Flag) return BadRequest(result.Message);
+
+			return Ok(result.Message);
+		}
+
+
 		[HttpGet("GenerateUserExcelFile")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -91,9 +103,9 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		public async Task<IActionResult> GenerateAuditLogExcelFile()
+		public async Task<IActionResult> GenerateAuditLogExcelFile([FromQuery] string? userEmail)
 		{
-			var result = await service.GenerateAuditLogsExcelFileAsync();
+			var result = await service.GenerateAuditLogsExcelFileAsync(userEmail);
 
 			if (!result.Flag) return BadRequest(result.Message);
 

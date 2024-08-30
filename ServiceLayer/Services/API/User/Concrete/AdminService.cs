@@ -24,13 +24,19 @@ namespace ServiceLayer.Services.API.User.Concrete
 		private readonly IGenericRepository<AppUser> _repository;
 		private readonly IMapper _mapper;
 		private readonly UserManager<AppUser> _userManager;
+		private readonly RoleManager<IdentityRole> _roleManager;
 
-		public AdminService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
+		public AdminService(
+			IUnitOfWork unitOfWork, 
+			IMapper mapper, 
+			UserManager<AppUser> userManager, 
+			RoleManager<IdentityRole> roleManager)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 			_repository = _unitOfWork.GetGenericRepository<AppUser>();
 			_userManager = userManager;
+			_roleManager = roleManager;
 		}
 
 		public Task<GenerateExcelFileResponse> GenerateUserExcelFileAsync(Guid? id)
@@ -66,9 +72,10 @@ namespace ServiceLayer.Services.API.User.Concrete
 				}
 			}
 		}
-		public Task<GenerateExcelFileResponse> GenerateAuditLogsExcelFileAsync()
+
+		public Task<GenerateExcelFileResponse> GenerateAuditLogsExcelFileAsync(string? userEmail)
 		{
-			DataTable auditLogsData = GetAuditLogsData();
+			DataTable auditLogsData = GetAuditLogsData(userEmail);
 			if (auditLogsData is null || auditLogsData.Rows.Count == 0)
 			{
 				return Task.FromResult(new GenerateExcelFileResponse(
@@ -153,6 +160,30 @@ namespace ServiceLayer.Services.API.User.Concrete
 				mappedAccount.ReceivedTransactions);
 		}
 
+		public async Task<GeneralResponse> CreateUserAsync(CreateUserDTO model)
+		{
+			if (model is null) return new GeneralResponse(false, "Model is empty.");
+
+			AppUser user = _mapper.Map<AppUser>(model);
+			if (user is null) return new GeneralResponse(false, "Failed to create user.");
+			user.UpdateNormalizedFields();
+
+			var existingUser = await _userManager.FindByEmailAsync(model.Email);
+			if (existingUser is not null) return new GeneralResponse(false, "User with given information already exists.");
+
+			var createdUser = await _userManager.CreateAsync(user, model.Password);
+			if (!createdUser.Succeeded) return new GeneralResponse(false, "Failed to create user.");
+
+			if (string.IsNullOrEmpty(model.Role)) return new GeneralResponse(false, "Role must be provided!");
+
+			if (!await _roleManager.RoleExistsAsync(model.Role)) return new GeneralResponse(false, "Role does not exists!");
+
+			var userRole = await _userManager.AddToRoleAsync(user, model.Role);
+			if (!userRole.Succeeded) return new GeneralResponse(false, "Failed to assign role to user");
+
+			return new GeneralResponse(true, "User added successfully!");
+		}
+
 		public async Task<GeneralResponse> UpdateUserInformationAsync(Guid id, UpdateUsersInformationDTO model)
 		{
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -175,7 +206,8 @@ namespace ServiceLayer.Services.API.User.Concrete
 		}
 
 
-		// Private method for generating excel file (contains data for excel file)
+
+		// Private method for generating excel file (contains AppUser data for excel file)
 		private DataTable GetUserData(Guid? userId)
 		{
 			DataTable dt = new();
@@ -229,7 +261,8 @@ namespace ServiceLayer.Services.API.User.Concrete
 			return dt;
 		}
 
-		private DataTable GetAuditLogsData()
+		// Private method for generating excel file (contains AuditLog data for excel file)
+		private DataTable GetAuditLogsData(string? userEmail)
 		{
 			DataTable dt = new();
 			dt.TableName = "AuditLogsData";
@@ -239,6 +272,28 @@ namespace ServiceLayer.Services.API.User.Concrete
 			dt.Columns.Add("Action", typeof(string));
 			dt.Columns.Add("TimeStamp", typeof(DateTime));
 			dt.Columns.Add("Changes", typeof(string));
+
+			if (!string.IsNullOrEmpty(userEmail))
+			{
+				List<AuditLog> userLogs = _unitOfWork
+					.GetGenericRepository<AuditLog>()
+					.Where(user => user.UserEmail == userEmail)
+					.ToList()!;
+
+				if (userLogs is not null)
+				{
+					userLogs.ForEach(item =>
+					dt.Rows.Add(
+						item.Id,
+						item.UserEmail,
+						item.EntityName,
+						item.Action,
+						item.TimeStamp,
+						item.Changes));
+					
+				}
+				return dt;
+			}
 
 			var auditLogsList = _unitOfWork
 				.GetGenericRepository<AuditLog>()

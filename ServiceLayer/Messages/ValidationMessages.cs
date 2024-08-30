@@ -41,5 +41,10 @@
 		{
 			return $"{propName} must be equal of {restriction} digits!";
 		}
+
+		public static string MustBeCorrectRole(string propName)
+		{
+			return $"{propName} must be user only!";
+		}
 	}
 }
