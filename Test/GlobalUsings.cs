@@ -1,0 +1,10 @@
+global using Xunit;
+global using ServiceLayer.Services.API.User.Abstract;
+global using ServiceLayer.Helpers;
+global using JWT_TokenBasedAuthentication.Controllers;
+global using static ServiceLayer.Responses.ServiceResponses;
+global using System.Security.Claims;
+global using Microsoft.AspNetCore.Mvc;
+global using FakeItEasy;
+global using FluentAssertions;
+global using Microsoft.AspNetCore.Http;
