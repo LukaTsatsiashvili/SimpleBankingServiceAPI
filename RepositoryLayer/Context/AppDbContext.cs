@@ -18,6 +18,7 @@ namespace RepositoryLayer.Context
 		public DbSet<Account> Accounts { get; set; }
 		public DbSet<Transaction> Transactions { get; set; }
 		public DbSet<AuditLog> AuditLogs { get; set; }
+		public DbSet<MonthlyReport> MonthlyReports { get; set; }
 
 
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -45,11 +46,22 @@ namespace RepositoryLayer.Context
 			return base.SaveChangesAsync(cancellationToken);
 		}
 
+		
+
+		protected override void OnModelCreating(ModelBuilder builder)
+		{
+			builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+			base.OnModelCreating(builder);
+		}
+
+
+
 		private string GetChanges(EntityEntry modifiedEntity)
 		{
 			var changes = new StringBuilder();
 
-			foreach(var property in modifiedEntity.OriginalValues.Properties)
+			foreach (var property in modifiedEntity.OriginalValues.Properties)
 			{
 				var originalValue = modifiedEntity.OriginalValues[property];
 				var currentValue = modifiedEntity.CurrentValues[property];
@@ -60,13 +72,6 @@ namespace RepositoryLayer.Context
 				}
 			}
 			return changes.ToString();
-		}
-
-		protected override void OnModelCreating(ModelBuilder builder)
-		{
-			builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-			base.OnModelCreating(builder);
 		}
 	}
 

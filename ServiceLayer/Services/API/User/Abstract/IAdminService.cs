@@ -1,4 +1,6 @@
-﻿using EntityLayer.DTOs.User;
+﻿using EntityLayer.DTOs;
+using EntityLayer.DTOs.User;
+using Microsoft.AspNetCore.Http;
 using static ServiceLayer.Responses.ServiceResponses;
 
 namespace ServiceLayer.Services.API.User.Abstract
@@ -13,5 +15,6 @@ namespace ServiceLayer.Services.API.User.Abstract
 
 		Task<GenerateExcelFileResponse> GenerateUserExcelFileAsync(Guid? id);
 		Task<GenerateExcelFileResponse> GenerateAuditLogsExcelFileAsync(string? userEmail);
+		Task<GeneralResponse> ImportMonthlyReportFileToDBAsync(MonthlyReportDTO model);
 	}
 }

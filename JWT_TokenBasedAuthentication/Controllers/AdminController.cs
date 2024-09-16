@@ -1,6 +1,8 @@
-﻿using EntityLayer.DTOs.User;
+﻿using EntityLayer.DTOs;
+using EntityLayer.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ServiceLayer.Helpers;
 using ServiceLayer.Services.API.User.Abstract;
 
 namespace JWT_TokenBasedAuthentication.Controllers
@@ -8,7 +10,9 @@ namespace JWT_TokenBasedAuthentication.Controllers
 	[Route("api/AdminServices")]
 	[Authorize(Roles = "Admin")]
 	[ApiController]
-	public class AdminController(IAdminService service) : ControllerBase
+	public class AdminController(
+		IAdminService service,
+		IFileValidator validator) : ControllerBase
 	{
 		[HttpGet("LoadAllUsers")]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,6 +76,10 @@ namespace JWT_TokenBasedAuthentication.Controllers
 		}
 
 		[HttpPost("CreateUser")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO model)
 		{
 			if (model == null) return BadRequest("Model is empty!");
@@ -110,6 +118,22 @@ namespace JWT_TokenBasedAuthentication.Controllers
 			if (!result.Flag) return BadRequest(result.Message);
 
 			return File(result.File, result.ContentType, result.FileName);
+		}
+
+		[HttpPost("UploadMonthlyReportFile")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		public async Task<IActionResult> UploadMonthlyReportFile([FromForm] MonthlyReportDTO model)
+		{
+			var validation = validator.ValidateExcelFile(model);
+			if (!validation.Flag) return BadRequest(validation.Message);
+
+			var response = await service.ImportMonthlyReportFileToDBAsync(model);
+			if (!response.Flag) return BadRequest(response.Message);
+
+			return Ok(response.Message);
 		}
 	}
 }

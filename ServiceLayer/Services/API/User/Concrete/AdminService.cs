@@ -2,11 +2,15 @@
 using AutoMapper.QueryableExtensions;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using EntityLayer.DTOs;
 using EntityLayer.DTOs.Account;
 using EntityLayer.DTOs.User;
 using EntityLayer.Entities;
 using EntityLayer.Entities.Auth;
 using EntityLayer.Entities.User;
+using ExcelDataReader;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RepositoryLayer.Repositories.Abstract;
@@ -25,18 +29,21 @@ namespace ServiceLayer.Services.API.User.Concrete
 		private readonly IMapper _mapper;
 		private readonly UserManager<AppUser> _userManager;
 		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly IWebHostEnvironment _environment;
 
 		public AdminService(
-			IUnitOfWork unitOfWork, 
-			IMapper mapper, 
-			UserManager<AppUser> userManager, 
-			RoleManager<IdentityRole> roleManager)
+			IUnitOfWork unitOfWork,
+			IMapper mapper,
+			UserManager<AppUser> userManager,
+			RoleManager<IdentityRole> roleManager,
+			IWebHostEnvironment environment)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 			_repository = _unitOfWork.GetGenericRepository<AppUser>();
 			_userManager = userManager;
 			_roleManager = roleManager;
+			_environment = environment;
 		}
 
 		public Task<GenerateExcelFileResponse> GenerateUserExcelFileAsync(Guid? id)
@@ -104,6 +111,62 @@ namespace ServiceLayer.Services.API.User.Concrete
 					return Task.FromResult(response);
 				}
 			}
+		}
+
+		public async Task<GeneralResponse> ImportMonthlyReportFileToDBAsync(MonthlyReportDTO model)
+		{
+			// Define upload path and ensure directory exists.
+			var uploadsFolder = Path.Combine(_environment.ContentRootPath, "Uploads", "MonthlyReports", $"{model.FileName}");
+			Directory.CreateDirectory(uploadsFolder);
+
+			// Generate unique file name and full path.
+			var uniqueFileName = model.FileName + Path.GetExtension(model.File.FileName);
+			var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+			// Save the uploaded file to the server.
+			using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+			{
+				await model.File.CopyToAsync(fileStream);
+			}
+
+			// Delay to ensure file readiness.
+			await Task.Delay(100);
+
+			// Read the Excel file.
+			using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				using var reader = ExcelReaderFactory.CreateReader(stream);
+
+				bool isHeaderSkipped = false;
+
+				// Read through Excel rows.
+				do
+				{
+					while (reader.Read())
+					{
+						if (!isHeaderSkipped)
+						{
+							isHeaderSkipped = true;
+							continue;
+						}
+
+						// Map Excel row data to MonthlyReport object.
+						MonthlyReport report = new()
+						{
+							TotalTransactions = Convert.ToInt32(reader.GetValue(0)),
+							TotalAmount = Convert.ToDecimal(reader.GetValue(1)),
+							Month = reader.GetValue(2)?.ToString() ?? "Unknown"
+						};
+
+						// Save report to the database.
+						var monthlyReportRepo = _unitOfWork.GetGenericRepository<MonthlyReport>();
+						await monthlyReportRepo.AddEntityAsync(report);
+						await _unitOfWork.SaveAsync();
+					}
+				} while (reader.NextResult());
+			}
+
+			return new GeneralResponse(true, "File uploaded successfully");
 		}
 
 		public async Task<GetAllUsersResponse> GetAllUsersAsync()
