@@ -18,6 +18,7 @@ Welcome to **SimpleBankingServiceAPI**! 🚀 This ASP.NET Core Web API provides 
 ### Admin Services 🛠️
 
 - Admin Controller with user information management and transaction handling.
+- Create User service for adding new users.
 - Update user information and generate Excel reports.
 
 ### Logging & Error Handling 📝
@@ -28,10 +29,11 @@ Welcome to **SimpleBankingServiceAPI**! 🚀 This ASP.NET Core Web API provides 
 ### Reporting 📊
 
 - Generate and export user information to Excel files.
+- Excel File Import for Monthly Reports, allowing admins to upload reports.
 - Optimized Excel file generation for performance and reliability.
   
 
-### **The app is under development and new functionality is added daily.**
+### **The app is under development and new features are added daily.**
 
 
 ## Getting Started
