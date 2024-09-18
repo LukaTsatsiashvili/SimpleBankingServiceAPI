@@ -30,7 +30,7 @@ namespace ServiceLayer.Responses
 		public record class GetUserInformationResponse(
 			bool Flag, 
 			string Message, 
-			Object? Data);
+			object? Data);
 
 		public record class AccountResponse(
 			bool Flag, 
