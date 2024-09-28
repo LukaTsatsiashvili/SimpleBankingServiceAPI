@@ -36,6 +36,7 @@ public class AccountControllerTest : BaseControllerTest<AccountController>
 		// Assert
 		result.StatusCode.Should().Be(200);
 		result.Should().NotBeNull();
+        result.Value.Should().BeEquivalentTo(mockResponse.Message);
 	}
 
     // Get
@@ -55,6 +56,7 @@ public class AccountControllerTest : BaseControllerTest<AccountController>
 		// Assert
 		result.StatusCode.Should().Be(200);
 		result.Should().NotBeNull();
+        result.Value.Should().BeEquivalentTo(mockResponse.Data);
 	}
 
     // Delete
@@ -73,5 +75,6 @@ public class AccountControllerTest : BaseControllerTest<AccountController>
 		// Assert
 		result.StatusCode.Should().Be(200);
 		result.Should().NotBeNull();
+        result.Value.Should().BeEquivalentTo(mockResponse.Message);
 	}
 }
